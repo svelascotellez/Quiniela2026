@@ -46,6 +46,9 @@ def delete_participant(filename):
 # ==========================================
 st.title("🏆 Consolidación de Quinielas - Mundial 2026")
 st.markdown("""
+Sube el archivo maestro y los archivos de los participantes. El sistema los **guardará automáticamente** para que no tengas que volver a subirlos la próxima vez.
+""")
+
 # Botones de descargas útiles
 TEMPLATE_PATH = "Quiniela_Mundial_2026_Final_vacia.xlsx"
 SCHEDULE_PATH = "FWC26 Match Schedule_v17_10042026_EN.pdf"
