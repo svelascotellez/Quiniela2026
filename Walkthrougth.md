@@ -1,5 +1,4 @@
-Walkthrough - 2026 FIFA World Cup Quiniela: Corrección y Evaluación Automatizada
-He completado con éxito la corrección y finalización de la Quiniela del Mundial 2026, así como el desarrollo e implementación del Sistema de Consolidación y Evaluación Automatizada (Opción B) para procesar las quinielas de múltiples participantes en tiempo real.
+2026 FIFA World Cup Quiniela: Corrección y Evaluación Automatizada
 
 A continuación se detalla todo el trabajo realizado, las correcciones estructurales y las instrucciones de uso para el administrador de la quiniela.
 
