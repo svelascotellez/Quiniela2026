@@ -46,22 +46,39 @@ def delete_participant(filename):
 # ==========================================
 st.title("🏆 Consolidación de Quinielas - Mundial 2026")
 st.markdown("""
-Sube el archivo maestro y los archivos de los participantes. El sistema los **guardará automáticamente** para que no tengas que volver a subirlos la próxima vez.
-""")
-
-# Botón para descargar plantilla vacía
+# Botones de descargas útiles
 TEMPLATE_PATH = "Quiniela_Mundial_2026_Final_vacia.xlsx"
-if os.path.exists(TEMPLATE_PATH):
-    with open(TEMPLATE_PATH, "rb") as f:
-        template_bytes = f.read()
-    st.download_button(
-        label="📄 Descargar Plantilla Vacía para Participar",
-        data=template_bytes,
-        file_name="Quiniela_Mundial_2026_Plantilla.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        help="Descarga este archivo de Excel, llénalo con tus pronósticos y súbelo para participar."
-    )
-    st.write("") # Espacio
+SCHEDULE_PATH = "FWC26 Match Schedule_v17_10042026_EN.pdf"
+
+col_btn1, col_btn2 = st.columns(2)
+
+with col_btn1:
+    if os.path.exists(TEMPLATE_PATH):
+        with open(TEMPLATE_PATH, "rb") as f:
+            template_bytes = f.read()
+        st.download_button(
+            label="📄 Descargar Plantilla para Participar",
+            data=template_bytes,
+            file_name="Quiniela_Mundial_2026_Plantilla.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            help="Descarga este archivo, llénalo con tus pronósticos y súbelo para participar.",
+            use_container_width=True
+        )
+
+with col_btn2:
+    if os.path.exists(SCHEDULE_PATH):
+        with open(SCHEDULE_PATH, "rb") as f:
+            schedule_bytes = f.read()
+        st.download_button(
+            label="📅 Descargar Calendario Oficial FIFA",
+            data=schedule_bytes,
+            file_name="Calendario_Oficial_Mundial_2026.pdf",
+            mime="application/pdf",
+            help="Descarga el calendario oficial de partidos de la FIFA en formato PDF.",
+            use_container_width=True
+        )
+
+st.write("") # Espacio
 
 
 tab_app, tab_instructions = st.tabs(["🎮 Panel de Control", "📖 Instrucciones y Reglas"])
