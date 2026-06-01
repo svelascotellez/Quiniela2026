@@ -105,7 +105,6 @@ with tab_app:
                 f.write(master_file_upload.getbuffer())
             st.session_state.calcular = False
             st.success("Archivo Maestro guardado y actualizado con éxito.")
-            st.rerun()
 
     with col2:
         st.header("2. Gestión de Participantes")
@@ -119,7 +118,6 @@ with tab_app:
                     f.write(p_file.getbuffer())
             st.session_state.calcular = False
             st.success(f"Se han guardado {len(participant_uploads)} nuevos participantes.")
-            st.rerun()
             
         st.subheader("Participantes Registrados")
         saved_participants = get_saved_participants()
