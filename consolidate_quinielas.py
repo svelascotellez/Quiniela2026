@@ -142,44 +142,48 @@ def process_knockout_stage(ws):
         val = ws.cell(row=r, column=c).value
         return str(val).strip() if val else ""
 
+    def get_t2(r):
+        v = get_raw_val(r, 8)
+        return v if v else get_raw_val(r, 6)
+
     # Dieciseisavos (filas 6 a 21)
     for r in range(6, 22):
-        t1, t2 = get_raw_val(r, 2), get_raw_val(r, 6) # Col B y Col F
+        t1, t2 = get_raw_val(r, 2), get_t2(r) # Col B y Col H o F
         if t1: advances["r32"].append(t1)
         if t2: advances["r32"].append(t2)
 
     # Octavos (filas 25 a 32)
     for r in range(25, 33):
-        t1, t2 = get_raw_val(r, 2), get_raw_val(r, 6)
+        t1, t2 = get_raw_val(r, 2), get_t2(r)
         if t1: advances["r16"].append(t1)
         if t2: advances["r16"].append(t2)
 
     # Cuartos (filas 37 a 40)
     for r in range(37, 41):
-        t1, t2 = get_raw_val(r, 2), get_raw_val(r, 6)
+        t1, t2 = get_raw_val(r, 2), get_t2(r)
         if t1: advances["qf"].append(t1)
         if t2: advances["qf"].append(t2)
 
     # Semifinales (filas 45 a 46)
     for r in range(45, 47):
-        t1, t2 = get_raw_val(r, 2), get_raw_val(r, 6)
+        t1, t2 = get_raw_val(r, 2), get_t2(r)
         if t1: advances["sf"].append(t1)
         if t2: advances["sf"].append(t2)
 
     # Disputan Tercer Lugar (fila 51)
-    t1_t3, t2_t3 = get_raw_val(51, 2), get_raw_val(51, 6)
+    t1_t3, t2_t3 = get_raw_val(51, 2), get_t2(51)
     if t1_t3: advances["t3p"].append(t1_t3)
     if t2_t3: advances["t3p"].append(t2_t3)
 
     # Gran Final (fila 56)
-    t1_f, t2_f = get_raw_val(56, 2), get_raw_val(56, 6)
+    t1_f, t2_f = get_raw_val(56, 2), get_t2(56)
     if t1_f: advances["final"].append(t1_f)
     if t2_f: advances["final"].append(t2_f)
 
     # Podio de Honor
-    advances["podium"]["champion"] = get_raw_val(60, 6)   # F60
-    advances["podium"]["runnerup"] = get_raw_val(61, 6)   # F61
-    advances["podium"]["third"] = get_raw_val(62, 6)      # F62
+    advances["podium"]["champion"] = get_t2(60)   # H60 o F60
+    advances["podium"]["runnerup"] = get_t2(61)   # H61 o F61
+    advances["podium"]["third"] = get_t2(62)      # H62 o F62
 
     # 2. Extraer los marcadores de los partidos individuales de Eliminatorias
     ko_matches = {}
@@ -198,9 +202,20 @@ def process_knockout_stage(ws):
         for r in row_range:
             t1 = ws.cell(row=r, column=2).value  # Columna B: Equipo A
             s1 = clean_score(ws.cell(row=r, column=3).value)  # Columna C: Goles A
-            s2 = clean_score(ws.cell(row=r, column=5).value)  # Columna E: Goles B
-            t2 = ws.cell(row=r, column=6).value  # Columna F: Equipo B
-            winner = ws.cell(row=r, column=7).value  # Columna G: Clasifica
+            
+            # Detectar formato nuevo vs viejo
+            t2_new = ws.cell(row=r, column=8).value
+            if t2_new is not None and str(t2_new).strip() != "":
+                pen1 = clean_score(ws.cell(row=r, column=4).value) # Columna D: Penales A
+                pen2 = clean_score(ws.cell(row=r, column=6).value) # Columna F: Penales B
+                s2 = clean_score(ws.cell(row=r, column=7).value)  # Columna G: Goles B
+                t2 = t2_new  # Columna H: Equipo B
+                winner = ws.cell(row=r, column=9).value  # Columna I: Clasifica
+            else:
+                pen1, pen2 = None, None
+                s2 = clean_score(ws.cell(row=r, column=5).value)  # Columna E: Goles B
+                t2 = ws.cell(row=r, column=6).value  # Columna F: Equipo B
+                winner = ws.cell(row=r, column=7).value  # Columna G: Clasifica
             
             if t1 and t2:
                 norm_t1 = normalize_team_name(t1)
@@ -210,6 +225,8 @@ def process_knockout_stage(ws):
                     "team1": t1,
                     "team2": t2,
                     "score1": s1,
+                    "pen1": pen1,
+                    "pen2": pen2,
                     "score2": s2,
                     "winner": winner,
                     "phase": phase_name
@@ -343,6 +360,7 @@ def evaluate_participant(participant_path, master_groups, master_groups_list, ma
     
     for master_key, m_match in master_ko_matches.items():
         m_s1, m_s2 = m_match["score1"], m_match["score2"]
+        m_p1, m_p2 = m_match.get("pen1"), m_match.get("pen2")
         if m_s1 is not None and m_s2 is not None:
             # Buscar en el participante
             p_match = part_ko_matches.get(master_key)
@@ -350,16 +368,23 @@ def evaluate_participant(participant_path, master_groups, master_groups_list, ma
                 p_match = part_ko_matches.get((master_key[1], master_key[0]))
                 if p_match:
                     p_s1, p_s2 = p_match["score2"], p_match["score1"]
+                    p_p1, p_p2 = p_match.get("pen2"), p_match.get("pen1")
                 else:
-                    p_s1, p_s2 = None, None
+                    p_s1, p_s2, p_p1, p_p2 = None, None, None, None
             else:
                 p_s1, p_s2 = p_match["score1"], p_match["score2"]
+                p_p1, p_p2 = p_match.get("pen1"), p_match.get("pen2")
                 
             if p_s1 is not None and p_s2 is not None:
+                # Definir ganador oficial
+                m_winner = 1 if m_s1 > m_s2 else (2 if m_s2 > m_s1 else (1 if m_p1 is not None and m_p2 is not None and m_p1 > m_p2 else (2 if m_p1 is not None and m_p2 is not None and m_p2 > m_p1 else 0)))
+                # Definir ganador participante
+                p_winner = 1 if p_s1 > p_s2 else (2 if p_s2 > p_s1 else (1 if p_p1 is not None and p_p2 is not None and p_p1 > p_p2 else (2 if p_p1 is not None and p_p2 is not None and p_p2 > p_p1 else 0)))
+                
                 if p_s1 == m_s1 and p_s2 == m_s2:
                     ko_match_score_pts += POINTS_CONFIG["KO_MATCH_EXACT"]
                     ko_exact_matches += 1
-                elif (p_s1 > p_s2 and m_s1 > m_s2) or (p_s1 < p_s2 and m_s1 < m_s2) or (p_s1 == p_s2 and m_s1 == m_s2):
+                elif m_winner != 0 and p_winner == m_winner:
                     ko_match_score_pts += POINTS_CONFIG["KO_MATCH_OUTCOME"]
                     ko_outcome_matches += 1
 
