@@ -1,0 +1,13 @@
+Ranking FIFA Dimensions: A1:I212
+Row 1: ['Posición', 'Selección', 'Código', 'Puntos Totales', 'Puntos Anteriores', 'Diferencia de Puntos (+/-)', 'Cambio de Puesto', 'Confederación']
+Row 2: [1, 'Francia', 'FRA', 1877.32, 1870, 7.32, '▲ +2', 'UEFA']
+Row 3: [2, 'España', 'ESP', 1876.4, 1877.18, -0.78, '▼ -1', 'UEFA']
+Row 4: [3, 'Argentina', 'ARG', 1874.81, 1873.33, 1.48, '▼ -1', 'CONMEBOL']
+Row 5: [4, 'Inglaterra', 'ENG', 1825.97, 1834.12, -8.15, '=', 'UEFA']
+Row 6: [5, 'Portugal', 'POR', 1763.83, 1760.38, 3.45, '▲ +1', 'UEFA']
+Row 7: [6, 'Brasil', 'BRA', 1761.16, 1760.46, 0.7, '▼ -1', 'CONMEBOL']
+Row 8: [7, 'Países Bajos', 'NED', 1757.87, 1756.27, 1.6, '=', 'UEFA']
+Row 9: [8, 'Marruecos', 'MAR', 1755.87, 1736.57, 19.3, '=', 'CAF']
+Row 10: [9, 'Bélgica', 'BEL', 1734.71, 1730.71, 4, '=', 'UEFA']
+Populated rows: 212
+Empty rows: 2

@@ -1,0 +1,97 @@
+Matches in Quiniela_Mundial_2026_Control.xlsx:
+
+Grupo A:
+  Row 6: México (2) vs (0) Sudáfrica
+  Row 7: Corea del Sur (2) vs (0) Chequia
+  Row 8: México (None) vs (None) Corea del Sur
+  Row 9: Sudáfrica (None) vs (None) Chequia
+  Row 10: Chequia (None) vs (None) México
+  Row 11: Sudáfrica (None) vs (None) Corea del Sur
+
+Grupo B:
+  Row 14: Canadá (2) vs (2) Bosnia y Herze.
+  Row 15: Qatar (0) vs (1) Suiza
+  Row 16: Canadá (None) vs (None) Qatar
+  Row 17: Bosnia y Herze. (None) vs (None) Suiza
+  Row 18: Suiza (None) vs (None) Canadá
+  Row 19: Bosnia y Herze. (None) vs (None) Qatar
+
+Grupo C:
+  Row 22: Brasil (3) vs (0) Marruecos
+  Row 23: Haití (0) vs (2) Escocia
+  Row 24: Brasil (None) vs (None) Haití
+  Row 25: Marruecos (None) vs (None) Escocia
+  Row 26: Escocia (None) vs (None) Brasil
+  Row 27: Marruecos (None) vs (None) Haití
+
+Grupo D:
+  Row 30: Estados Unidos (2) vs (2) Paraguay
+  Row 31: Australia (1) vs (3) Turquía
+  Row 32: Estados Unidos (None) vs (None) Australia
+  Row 33: Paraguay (None) vs (None) Turquía
+  Row 34: Turquía (None) vs (None) Estados Unidos
+  Row 35: Paraguay (None) vs (None) Australia
+
+Grupo E:
+  Row 38: Alemania (4) vs (0) Curaçao
+  Row 39: Costa de Marfil (2) vs (1) Ecuador
+  Row 40: Alemania (None) vs (None) Costa de Marfil
+  Row 41: Curaçao (None) vs (None) Ecuador
+  Row 42: Ecuador (None) vs (None) Alemania
+  Row 43: Curaçao (None) vs (None) Costa de Marfil
+
+Grupo F:
+  Row 46: Países Bajos (3) vs (1) Japón
+  Row 47: Suecia (4) vs (0) Túnez
+  Row 48: Países Bajos (None) vs (None) Suecia
+  Row 49: Japón (None) vs (None) Túnez
+  Row 50: Túnez (None) vs (None) Países Bajos
+  Row 51: Japón (None) vs (None) Suecia
+
+Grupo G:
+  Row 54: Bélgica (4) vs (1) Egipto
+  Row 55: Irán (1) vs (1) Nueva Zelanda
+  Row 56: Bélgica (None) vs (None) Irán
+  Row 57: Egipto (None) vs (None) Nueva Zelanda
+  Row 58: Nueva Zelanda (None) vs (None) Bélgica
+  Row 59: Egipto (None) vs (None) Irán
+
+Grupo H:
+  Row 62: España (5) vs (0) Cabo Verde
+  Row 63: Arabia Saud. (2) vs (1) Uruguay
+  Row 64: España (None) vs (None) Arabia Saud.
+  Row 65: Cabo Verde (None) vs (None) Uruguay
+  Row 66: Uruguay (None) vs (None) España
+  Row 67: Cabo Verde (None) vs (None) Arabia Saud.
+
+Grupo I:
+  Row 70: Francia (3) vs (0) Senegal
+  Row 71: Irak (4) vs (1) Noruega
+  Row 72: Francia (None) vs (None) Irak
+  Row 73: Senegal (None) vs (None) Noruega
+  Row 74: Noruega (None) vs (None) Francia
+  Row 75: Senegal (None) vs (None) Irak
+
+Grupo J:
+  Row 78: Argentina (3) vs (0) Argelia
+  Row 79: Austria (4) vs (1) Jordania
+  Row 80: Argentina (None) vs (None) Austria
+  Row 81: Argelia (None) vs (None) Jordania
+  Row 82: Jordania (None) vs (None) Argentina
+  Row 83: Argelia (None) vs (None) Austria
+
+Grupo K:
+  Row 86: Portugal (4) vs (1) RD Congo
+  Row 87: Uzbekistán (0) vs (1) Colombia
+  Row 88: Portugal (None) vs (None) Uzbekistán
+  Row 89: RD Congo (None) vs (None) Colombia
+  Row 90: Colombia (None) vs (None) Portugal
+  Row 91: RD Congo (None) vs (None) Uzbekistán
+
+Grupo L:
+  Row 94: Inglaterra (2) vs (0) Croacia
+  Row 95: Ghana (4) vs (1) Panamá
+  Row 96: Inglaterra (None) vs (None) Ghana
+  Row 97: Croacia (None) vs (None) Panamá
+  Row 98: Panamá (None) vs (None) Inglaterra
+  Row 99: Croacia (None) vs (None) Ghana
