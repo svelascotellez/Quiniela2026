@@ -122,10 +122,11 @@ def process_group_stage(ws, is_master=False):
                 
     return matches, match_list
 
-def process_knockout_stage(ws):
+def process_knockout_stage(ws, valid_teams=None):
     """
     Extrae los datos de la pestaña 'Eliminatorias'.
     Retorna un diccionario con los equipos avanzados por ronda y los resultados de partidos.
+    Solo considera equipos que se encuentren en valid_teams (si se proporciona) para ignorar placeholders.
     """
     # 1. Extraer los equipos avanzados de cada fase (según la estructura real de celdas)
     advances = {
@@ -140,7 +141,12 @@ def process_knockout_stage(ws):
 
     def get_raw_val(r, c):
         val = ws.cell(row=r, column=c).value
-        return str(val).strip() if val else ""
+        v = str(val).strip() if val else ""
+        if valid_teams is not None and v != "":
+            norm_v = normalize_team_name(v)
+            if norm_v not in valid_teams:
+                return ""
+        return v
 
     def get_t2(r):
         v = get_raw_val(r, 8)
@@ -216,7 +222,10 @@ def process_knockout_stage(ws):
                 s2 = clean_score(ws.cell(row=r, column=5).value)  # Columna E: Goles B
                 t2 = ws.cell(row=r, column=6).value  # Columna F: Equipo B
                 winner = ws.cell(row=r, column=7).value  # Columna G: Clasifica
-            
+            if valid_teams is not None:
+                if t1 and normalize_team_name(t1) not in valid_teams: t1 = ""
+                if t2 and normalize_team_name(t2) not in valid_teams: t2 = ""
+                
             if t1 and t2:
                 norm_t1 = normalize_team_name(t1)
                 norm_t2 = normalize_team_name(t2)
@@ -277,7 +286,9 @@ def evaluate_participant(participant_path, master_groups, master_groups_list, ma
                         group_outcome_matches += 1
     
     # 2. Evaluar Avanzados de Eliminatorias (March Madness Bracket System)
-    part_ko_advances, part_ko_matches = process_knockout_stage(wb['Eliminatorias'])
+    valid_teams = set(normalize_team_name(m["team1"]) for m in part_groups_list) | set(normalize_team_name(m["team2"]) for m in part_groups_list)
+    valid_teams.discard("")
+    part_ko_advances, part_ko_matches = process_knockout_stage(wb['Eliminatorias'], valid_teams=valid_teams)
     
     r32_pts = 0
     r16_pts = 0
@@ -808,7 +819,9 @@ def process_master_file(master_file):
     """
     wb_master = openpyxl.load_workbook(master_file, data_only=True)
     master_groups, master_groups_list = process_group_stage(wb_master['Grupos'], is_master=True)
-    master_ko_advances, master_ko_matches = process_knockout_stage(wb_master['Eliminatorias'])
+    valid_teams = set(normalize_team_name(m["team1"]) for m in master_groups_list) | set(normalize_team_name(m["team2"]) for m in master_groups_list)
+    valid_teams.discard("")
+    master_ko_advances, master_ko_matches = process_knockout_stage(wb_master['Eliminatorias'], valid_teams=valid_teams)
     wb_master.close()
     
     max_possible_pts = 0
