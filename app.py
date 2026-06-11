@@ -16,6 +16,113 @@ st.set_page_config(
     layout="wide"
 )
 
+FIFA_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif !important;
+}
+.stApp {
+    background-color: #F8F9FA !important;
+}
+
+/* Hide Default Streamlit Elements */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Custom Header Banner */
+.fifa-header {
+    background: linear-gradient(135deg, #001489 0%, #004B9B 100%);
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0, 20, 137, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.fifa-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: white !important;
+}
+.fifa-header span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #00AEEF;
+    background: rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 50px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #001489 !important;
+    font-weight: 700 !important;
+}
+
+/* Primary Buttons */
+.stButton>button, .stDownloadButton>button {
+    background: linear-gradient(90deg, #001489 0%, #00AEEF 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.stButton>button:hover, .stDownloadButton>button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px rgba(0, 174, 239, 0.4) !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 24px;
+    border-bottom: 2px solid #E0E0E0;
+}
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    background-color: transparent !important;
+    border: none !important;
+    color: #666 !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    border-bottom: 3px solid transparent !important;
+    padding-bottom: 5px;
+}
+.stTabs [aria-selected="true"] {
+    color: #001489 !important;
+    border-bottom: 3px solid #00AEEF !important;
+}
+
+/* Inputs / File Uploaders */
+div[data-baseweb="file-uploader"] {
+    background-color: white;
+    border: 2px dashed #00AEEF;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+/* Success/Error/Info Messages */
+.stAlert {
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+}
+
+.stProgress > div > div > div > div {
+    background-color: #00AEEF !important;
+}
+</style>
+"""
+st.markdown(FIFA_CSS, unsafe_allow_html=True)
+
 # ==========================================
 # AUTENTICACIÓN
 # ==========================================
@@ -67,7 +174,13 @@ def delete_participant(filename):
 # ==========================================
 # INTERFAZ GRÁFICA
 # ==========================================
-st.title("🏆 Consolidación de Quinielas - Mundial 2026")
+st.markdown("""
+<div class="fifa-header">
+    <h1>🏆 Quiniela Mundial 2026</h1>
+    <span>Panel de Administración</span>
+</div>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 Sube el archivo maestro y los archivos de los participantes. El sistema los **guardará automáticamente** para que no tengas que volver a subirlos la próxima vez.
 """)
