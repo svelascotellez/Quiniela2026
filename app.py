@@ -329,8 +329,50 @@ with tab_app:
                 )
                 
                 # CREAR PESTAÑAS
-                tab_clasif, tab_resul = st.tabs(["🏆 Clasificación General", "⚽ Resultados Oficiales"])
+                tab_dash, tab_clasif, tab_resul = st.tabs(["📊 Dashboard", "🏆 Clasificación General", "⚽ Resultados Oficiales"])
                 
+                with tab_dash:
+                    st.subheader("📊 Métricas Clave de la Quiniela")
+                    
+                    if participant_results:
+                        # KPIs
+                        total_participants = len(participant_results)
+                        avg_points = sum(r["total_points"] for r in participant_results) / total_participants
+                        max_points = max(r["total_points"] for r in participant_results)
+                        max_exactos = max(r["exact_aciertos_totales"] for r in participant_results)
+                        
+                        col1, col2, col3, col4 = st.columns(4)
+                        col1.metric("Participantes", total_participants)
+                        col2.metric("Promedio de Puntos", f"{avg_points:.1f}")
+                        col3.metric("Puntuación Más Alta", max_points)
+                        col4.metric("Máx. Marcadores Exactos", max_exactos)
+                        
+                        st.divider()
+                        
+                        # Charts
+                        col_chart1, col_chart2 = st.columns(2)
+                        
+                        with col_chart1:
+                            st.markdown("#### 🏆 Top 10 Participantes (Puntos Totales)")
+                            # Prepare data for bar chart
+                            top_10 = participant_results[:10]
+                            df_top_10 = pd.DataFrame({
+                                "Nombre": [r["name"] for r in top_10],
+                                "Puntos": [r["total_points"] for r in top_10]
+                            }).set_index("Nombre")
+                            st.bar_chart(df_top_10, use_container_width=True)
+                            
+                        with col_chart2:
+                            st.markdown("#### 🎯 Líderes en Marcadores Exactos")
+                            top_exactos = sorted(participant_results, key=lambda x: -x["exact_aciertos_totales"])[:10]
+                            df_exactos = pd.DataFrame({
+                                "Nombre": [r["name"] for r in top_exactos],
+                                "Aciertos Exactos": [r["exact_aciertos_totales"] for r in top_exactos]
+                            }).set_index("Nombre")
+                            st.bar_chart(df_exactos, color="#00AEEF", use_container_width=True)
+                    else:
+                        st.info("No hay datos suficientes para mostrar el Dashboard.")
+
                 with tab_clasif:
                     # 4. Mostrar DataFrame (Tabla Resumen en Web)
                     st.subheader("📊 Tabla de Clasificación")
