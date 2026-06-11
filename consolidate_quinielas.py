@@ -824,10 +824,38 @@ def process_master_file(master_file):
     master_ko_advances, master_ko_matches = process_knockout_stage(wb_master['Eliminatorias'], valid_teams=valid_teams)
     wb_master.close()
     
+    # === FASE DE COMPLETITUD PARA EVITAR PUNTOS PREMATUROS POR FORMULAS ===
+    # Contar partidos completados en cada fase
+    group_matches_played = sum(1 for m in master_groups_list if m["score1"] is not None and m["score2"] is not None)
+    ko_r32_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "r32" and m["score1"] is not None and m["score2"] is not None)
+    ko_r16_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "r16" and m["score1"] is not None and m["score2"] is not None)
+    ko_qf_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "qf" and m["score1"] is not None and m["score2"] is not None)
+    ko_sf_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "sf" and m["score1"] is not None and m["score2"] is not None)
+    ko_final_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "final" and m["score1"] is not None and m["score2"] is not None)
+    ko_t3p_played = sum(1 for m in master_ko_matches.values() if m["phase"] == "t3p" and m["score1"] is not None and m["score2"] is not None)
+    
+    # Solo evaluar equipos avanzados si la fase previa está 100% terminada
+    if group_matches_played < 72:
+        master_ko_advances["r32"] = []
+    if ko_r32_played < 16:
+        master_ko_advances["r16"] = []
+    if ko_r16_played < 8:
+        master_ko_advances["qf"] = []
+    if ko_qf_played < 4:
+        master_ko_advances["sf"] = []
+    if ko_sf_played < 2:
+        master_ko_advances["t3p"] = []
+        master_ko_advances["final"] = []
+    if ko_final_played < 1:
+        master_ko_advances["podium"]["champion"] = ""
+        master_ko_advances["podium"]["runnerup"] = ""
+    if ko_t3p_played < 1:
+        master_ko_advances["podium"]["third"] = ""
+    # ======================================================================
+
     max_possible_pts = 0
     
     # Fase de Grupos
-    group_matches_played = sum(1 for m in master_groups_list if m["score1"] is not None and m["score2"] is not None)
     max_possible_pts += group_matches_played * POINTS_CONFIG["GROUP_EXACT"]
     
     # Eliminatorias - Marcadores de partidos disputados
