@@ -328,6 +328,19 @@ with tab_app:
                     key=lambda x: (-x["total_points"], -x["exact_aciertos_totales"], x["name"].lower())
                 )
                 
+                # 3.5 Calcular rangos (Sistema Olímpico)
+                current_rank = 1
+                for i, r in enumerate(participant_results):
+                    if i > 0:
+                        prev = participant_results[i - 1]
+                        if r["total_points"] == prev["total_points"] and r["exact_aciertos_totales"] == prev["exact_aciertos_totales"]:
+                            r["rank"] = current_rank
+                        else:
+                            current_rank = i + 1
+                            r["rank"] = current_rank
+                    else:
+                        r["rank"] = 1
+                
                 # CREAR PESTAÑAS
                 tab_dash, tab_clasif, tab_resul = st.tabs(["📊 Dashboard", "🏆 Clasificación General", "⚽ Resultados Oficiales"])
                 
@@ -377,9 +390,9 @@ with tab_app:
                     # 4. Mostrar DataFrame (Tabla Resumen en Web)
                     st.subheader("📊 Tabla de Clasificación")
                     df_data = []
-                    for idx, r in enumerate(participant_results, 1):
+                    for r in participant_results:
                         df_data.append({
-                            "Posición": idx,
+                            "Posición": r["rank"],
                             "Nombre": r["name"],
                             "Puntos Totales": r["total_points"],
                             "Efectividad": f"{(r['total_points']/max_possible_pts*100) if max_possible_pts > 0 else 0:.1f}%",

@@ -513,31 +513,33 @@ def create_premium_leaderboard(results, output_path, max_possible_pts, master_gr
         
     # 4. Inserción de Datos y Formato Dinámico
     # Nota: results viene ordenado por puntos totales (descendente) y luego aciertos exactos (descendente)
-    for idx, r in enumerate(results, 1):
-        row_num = 5 + idx
+    for row_idx, r in enumerate(results, 1):
+        row_num = 5 + row_idx
         ws.row_dimensions[row_num].height = 22
         
+        rank = r.get("rank", row_idx)
+        
         # Asignar estilo de fila especial para el Top 3 (Oro, Plata, Bronce)
-        if idx == 1:
+        if rank == 1:
             row_fill = fill_gold
             medal = "🏆 "
             row_font = font_top3
-        elif idx == 2:
+        elif rank == 2:
             row_fill = fill_silver
             medal = "🥈 "
             row_font = font_top3
-        elif idx == 3:
+        elif rank == 3:
             row_fill = fill_bronze
             medal = "🥉 "
             row_font = font_top3
         else:
-            row_fill = fill_zebra_light if idx % 2 == 0 else PatternFill(fill_type=None)
+            row_fill = fill_zebra_light if row_idx % 2 == 0 else PatternFill(fill_type=None)
             medal = ""
             row_font = font_data_normal
             
         # Rellenar cada columna
         # Col 1: Lugar
-        c = ws.cell(row=row_num, column=1, value=idx)
+        c = ws.cell(row=row_num, column=1, value=rank)
         c.font = Font(name=font_family, size=10, bold=True)
         c.alignment = align_center
         c.border = border_cell
@@ -784,21 +786,23 @@ def generate_whatsapp_report(results, max_possible_pts):
     report.append(f"🎯 _Puntos Máximos Disputados hasta hoy: {max_possible_pts}_")
     report.append(f"-------------------------------------------")
     
-    for idx, r in enumerate(results, 1):
+    for row_idx, r in enumerate(results, 1):
         effectiveness_pct = (r["total_points"] / max_possible_pts * 100) if max_possible_pts > 0 else 0.0
         
-        if idx == 1:
+        rank = r.get("rank", row_idx)
+        
+        if rank == 1:
             emoji = "🥇"
-            prefix = f"*{idx}. {emoji} {r['name'].upper()}*"
-        elif idx == 2:
+            prefix = f"*{rank}. {emoji} {r['name'].upper()}*"
+        elif rank == 2:
             emoji = "🥈"
-            prefix = f"*{idx}. {emoji} {r['name']}*"
-        elif idx == 3:
+            prefix = f"*{rank}. {emoji} {r['name']}*"
+        elif rank == 3:
             emoji = "🥉"
-            prefix = f"*{idx}. {emoji} {r['name']}*"
+            prefix = f"*{rank}. {emoji} {r['name']}*"
         else:
             emoji = "🏃‍♂️"
-            prefix = f"{idx}. {r['name']}"
+            prefix = f"{rank}. {emoji} {r['name']}"
             
         points_str = f"*{r['total_points']} pts*"
         details = f"({r['exact_aciertos_totales']} marcadores exactos | {effectiveness_pct:.1f}% efectividad)"
