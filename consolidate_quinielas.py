@@ -779,7 +779,14 @@ def generate_whatsapp_report(results, max_possible_pts):
     Genera un texto perfectamente formateado listo para copiar y pegar en WhatsApp
     para mantener informados a todos los miembros de la quiniela.
     """
-    now_str = datetime.now().strftime('%d/%m/%Y a las %H:%M')
+    try:
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo("America/Mexico_City")
+    except ImportError:
+        from datetime import timezone, timedelta
+        tz = timezone(timedelta(hours=-6)) # Mexico Central Time fallback
+        
+    now_str = datetime.now(tz).strftime('%d/%m/%Y a las %H:%M')
     report = []
     report.append(f"🏆 *CLASIFICACIÓN QUINIELA MUNDIAL 2026* 🏆")
     report.append(f"📊 _Actualizado: {now_str}_")
@@ -809,7 +816,24 @@ def generate_whatsapp_report(results, max_possible_pts):
         report.append(f"{prefix} ➔ {points_str} {details}")
         
     report.append(f"-------------------------------------------")
-    report.append(f"🔥 ¡Felicidades al líder temporal! ¿Quién ganará? 🍿🚀")
+    
+    leaders = []
+    for row_idx, r in enumerate(results, 1):
+        if r.get("rank", row_idx) == 1:
+            leaders.append(r['name'])
+            
+    if not leaders and results:
+        leaders = [results[0]['name']]
+        
+    if len(leaders) == 1:
+        leader_text = f"¡Felicidades a {leaders[0]} que va de líder!"
+    elif len(leaders) > 1:
+        leader_names = ", ".join(leaders[:-1]) + " y " + leaders[-1]
+        leader_text = f"¡Felicidades a {leader_names} que van de líderes!"
+    else:
+        leader_text = "¡Felicidades al líder temporal!"
+        
+    report.append(f"🔥 {leader_text} ¿Quién ganará? 🍿🚀")
     
     return "\n".join(report)
 
