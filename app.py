@@ -8,6 +8,7 @@ from consolidate_quinielas import (
     create_premium_leaderboard,
     generate_whatsapp_report
 )
+from fetch_web_results import update_master_from_web
 
 # Configuración de página
 st.set_page_config(
@@ -228,19 +229,29 @@ with tab_app:
     with col1:
         st.header("1. Archivo Maestro")
         
-        # Mostrar estado del archivo maestro actual
-        if os.path.exists(MASTER_FILE_PATH):
-            st.success("✅ Hay un archivo Maestro guardado en el sistema.")
+        # Selector de fuente de datos
+        data_source = st.radio(
+            "Fuente de resultados oficiales:",
+            ["Subir archivo Excel manualmente", "Obtener resultados automáticamente (Web)"],
+            help="Puedes subir tu propio Excel Maestro o dejar que el sistema descargue los resultados reales de internet."
+        )
+        
+        if data_source == "Subir archivo Excel manualmente":
+            # Mostrar estado del archivo maestro actual
+            if os.path.exists(MASTER_FILE_PATH):
+                st.success("✅ Hay un archivo Maestro guardado en el sistema.")
+            else:
+                st.warning("⚠️ No hay archivo Maestro guardado.")
+                
+            master_file_upload = st.file_uploader("Actualizar archivo Maestro", type=["xlsx"], key="master")
+            if master_file_upload:
+                # Guardar archivo maestro físico
+                with open(MASTER_FILE_PATH, "wb") as f:
+                    f.write(master_file_upload.getbuffer())
+                st.session_state.calcular = False
+                st.success("Archivo Maestro guardado y actualizado con éxito.")
         else:
-            st.warning("⚠️ No hay archivo Maestro guardado.")
-            
-        master_file_upload = st.file_uploader("Actualizar archivo Maestro", type=["xlsx"], key="master")
-        if master_file_upload:
-            # Guardar archivo maestro físico
-            with open(MASTER_FILE_PATH, "wb") as f:
-                f.write(master_file_upload.getbuffer())
-            st.session_state.calcular = False
-            st.success("Archivo Maestro guardado y actualizado con éxito.")
+            st.info("🌐 El sistema descargará los resultados más recientes de internet al calcular.")
 
     with col2:
         st.header("2. Gestión de Participantes")
@@ -281,7 +292,7 @@ with tab_app:
         st.session_state.calcular = True
 
     if st.session_state.get("calcular", False):
-        if not os.path.exists(MASTER_FILE_PATH):
+        if data_source == "Subir archivo Excel manualmente" and not os.path.exists(MASTER_FILE_PATH):
             st.error("Debes subir un archivo Maestro primero.")
             st.session_state.calcular = False
             st.stop()
@@ -294,8 +305,22 @@ with tab_app:
             
         with st.spinner("Procesando resultados oficiales y calculando puntos..."):
             try:
-                # 1. Procesar archivo maestro guardado
-                master_groups, master_groups_list, master_ko_advances, master_ko_matches, max_possible_pts, group_matches_played = process_master_file(MASTER_FILE_PATH)
+                # 0. Obtener datos web si es necesario
+                master_path_to_use = MASTER_FILE_PATH
+                if data_source == "Obtener resultados automáticamente (Web)":
+                    st.info("Obteniendo datos de internet...")
+                    web_master_path = os.path.join(MASTER_DIR, "master_web.xlsx")
+                    try:
+                        partidos_act = update_master_from_web(TEMPLATE_PATH, web_master_path)
+                        st.success(f"Se actualizaron {partidos_act} partidos desde la Web.")
+                        master_path_to_use = web_master_path
+                    except Exception as e:
+                        st.error(str(e))
+                        st.session_state.calcular = False
+                        st.stop()
+
+                # 1. Procesar archivo maestro
+                master_groups, master_groups_list, master_ko_advances, master_ko_matches, max_possible_pts, group_matches_played = process_master_file(master_path_to_use)
                 
                 # 2. Procesar participantes guardados
                 participant_results = []

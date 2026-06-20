@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundial 2026 - Resultados</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 40px auto;
+            max-width: 800px;
+            padding: 0 20px;
+            background-color: #f4f4f9;
+        }
+        h1 { text-align: center; }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover { background-color: #004494; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0056b3;
+            color: white;
+        }
+        #loading {
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 Resultados Mundial FIFA 2026</h1>
+    
+    <div class="controls">
+        <button id="btnActualizar">Obtener Resultados Actualizados</button>
+    </div>
+
+    <div id="loading">Conectando con el repositorio y descargando datos...</div>
+
+    <table id="tablaResultados">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Local</th>
+                <th>Marcador</th>
+                <th>Visitante</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+            </tbody>
+    </table>
+
+    <script>
+        // URL directa al archivo "crudo" en GitHub
+        // NOTA: Reemplazar con la URL "Raw" exacta de matches_detailed.csv del repositorio
+        const DATASET_URL = 'https://raw.githubusercontent.com/mominullptr/FIFA-World-Cup-2026-Dataset/main/matches_detailed.csv';
+
+        document.getElementById('btnActualizar').addEventListener('click', async () => {
+            const tbody = document.getElementById('cuerpoTabla');
+            const loading = document.getElementById('loading');
+            
+            // Limpiar tabla y mostrar mensaje de carga
+            tbody.innerHTML = '';
+            loading.style.display = 'block';
+
+            try {
+                // Ir a buscar el archivo CSV a internet
+                const respuesta = await fetch(DATASET_URL);
+                const textoCSV = await respuesta.text();
+                
+                // Dividir el texto por saltos de línea para obtener las filas
+                const filas = textoCSV.split('\n');
+                
+                // Ocultar mensaje de carga
+                loading.style.display = 'none';
+
+                // Diccionario de traducción de equipos al español
+                const traduccionesEquipos = {
+                    "Mexico": "México", "South Korea": "Corea del Sur", "South Africa": "Sudáfrica", "Czechia": "Chequia",
+                    "Canada": "Canadá", "Switzerland": "Suiza", "Qatar": "Qatar", "Bosnia and Herzegovina": "Bosnia y Herze.",
+                    "Brazil": "Brasil", "Scotland": "Escocia", "Morocco": "Marruecos", "Haiti": "Haití",
+                    "USA": "Estados Unidos", "United States": "Estados Unidos", "Turkey": "Turquía", "Paraguay": "Paraguay", "Australia": "Australia",
+                    "Germany": "Alemania", "Ecuador": "Ecuador", "Ivory Coast": "Costa de Marfil", "Côte d'Ivoire": "Costa de Marfil", "Curacao": "Curaçao",
+                    "Netherlands": "Países Bajos", "Tunisia": "Túnez", "Japan": "Japón", "Sweden": "Suecia",
+                    "Belgium": "Bélgica", "New Zealand": "Nueva Zelanda", "Egypt": "Egipto", "Iran": "Irán",
+                    "Spain": "España", "Uruguay": "Uruguay", "Cape Verde": "Cabo Verde", "Saudi Arabia": "Arabia Saud.",
+                    "France": "Francia", "Norway": "Noruega", "Senegal": "Senegal", "Iraq": "Irak",
+                    "Argentina": "Argentina", "Jordan": "Jordania", "Algeria": "Argelia", "Austria": "Austria",
+                    "Portugal": "Portugal", "Colombia": "Colombia", "DR Congo": "RD Congo", "Uzbekistan": "Uzbekistán",
+                    "England": "Inglaterra", "Panama": "Panamá", "Croatia": "Croacia", "Ghana": "Ghana"
+                };
+                const traducir = (nombre) => traduccionesEquipos[nombre] || nombre;
+
+                // Saltamos la primera fila (los encabezados) y procesamos el resto
+                for (let i = 1; i < filas.length; i++) {
+                    if (!filas[i]) continue; // Evitar líneas vacías
+                    
+                    // Separar las columnas por coma (suponiendo un CSV simple)
+                    const columnas = filas[i].split(',');
+
+                    // Índices correctos basados en la cabecera real del CSV:
+                    const fecha = columnas[1] + " " + columnas[2]; // date + kickoff_time_utc
+                    const local = traducir(columnas[7]);           // home_team_name
+                    const golesL = columnas[11];                   // home_score
+                    const golesV = columnas[12];                   // away_score
+                    const visitante = traducir(columnas[9]);       // away_team_name
+
+                    const filaHTML = `
+                        <tr>
+                            <td>${fecha}</td>
+                            <td>${local}</td>
+                            <td><strong>${golesL} - ${golesV}</strong></td>
+                            <td>${visitante}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += filaHTML;
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Hubo un error al obtener los datos.</td></tr>`;
+                console.error("Error completo:", error);
+            }
+        });
+    </script>
+</body>
+</html>
