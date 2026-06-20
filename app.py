@@ -221,7 +221,7 @@ with col_btn2:
 st.write("") # Espacio
 
 
-tab_app, tab_instructions = st.tabs(["🎮 Panel de Control", "📖 Instrucciones y Reglas"])
+tab_app, tab_web, tab_instructions = st.tabs(["🎮 Panel de Control", "🌐 Resultados obtenidos de la Web", "📖 Instrucciones y Reglas"])
 
 with tab_app:
     col1, col2 = st.columns(2)
@@ -477,6 +477,19 @@ with tab_app:
                     
             except Exception as e:
                 st.error(f"Ocurrió un error general: {e}")
+
+with tab_web:
+    st.subheader("🌐 Resultados Oficiales desde la Web")
+    st.write("Esta pestaña muestra los datos crudos obtenidos directamente de la base de datos pública en internet.")
+    
+    import streamlit.components.v1 as components
+    html_path = "ObtenerresultadosWeb.html"
+    if os.path.exists(html_path):
+        with open(html_path, "r", encoding="utf-8") as f:
+            html_content = f.read()
+        components.html(html_content, height=800, scrolling=True)
+    else:
+        st.warning("No se encontró el archivo de visualización web.")
 
 with tab_instructions:
     st.markdown("""
