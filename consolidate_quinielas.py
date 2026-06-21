@@ -1016,6 +1016,19 @@ def main():
         key=lambda x: (-x["total_points"], -x["exact_aciertos_totales"], x["name"].lower())
     )
     
+    # Calcular rangos (Sistema Olímpico)
+    current_rank = 1
+    for i, r in enumerate(participant_results):
+        if i > 0:
+            prev = participant_results[i - 1]
+            if r["total_points"] == prev["total_points"]:
+                r["rank"] = current_rank
+            else:
+                current_rank = i + 1
+                r["rank"] = current_rank
+        else:
+            r["rank"] = 1
+    
     # 6. Generar el archivo de clasificación espectacular de Excel
     print(f"\nGenerando el archivo Excel Leaderboard de Clasificación General...")
     try:

@@ -8,7 +8,10 @@ from consolidate_quinielas import (
     create_premium_leaderboard,
     generate_whatsapp_report
 )
-from fetch_web_results import update_master_from_web
+import fetch_web_results
+import importlib
+importlib.reload(fetch_web_results)
+update_master_from_web = fetch_web_results.update_master_from_web
 
 # Configuración de página
 st.set_page_config(
@@ -358,7 +361,7 @@ with tab_app:
                 for i, r in enumerate(participant_results):
                     if i > 0:
                         prev = participant_results[i - 1]
-                        if r["total_points"] == prev["total_points"] and r["exact_aciertos_totales"] == prev["exact_aciertos_totales"]:
+                        if r["total_points"] == prev["total_points"]:
                             r["rank"] = current_rank
                         else:
                             current_rank = i + 1
