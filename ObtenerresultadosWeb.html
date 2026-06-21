@@ -76,9 +76,8 @@
     </table>
 
     <script>
-        // URL directa al archivo "crudo" en GitHub
-        // NOTA: Reemplazar con la URL "Raw" exacta de matches_detailed.csv del repositorio
-        const DATASET_URL = 'https://raw.githubusercontent.com/mominullptr/FIFA-World-Cup-2026-Dataset/main/matches_detailed.csv';
+        // URL a la base de datos abierta de OpenFootball (Formato JSON)
+        const DATASET_URL = 'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json';
 
         document.getElementById('btnActualizar').addEventListener('click', async () => {
             const tbody = document.getElementById('cuerpoTabla');
@@ -89,56 +88,53 @@
             loading.style.display = 'block';
 
             try {
-                // Ir a buscar el archivo CSV a internet
-                const respuesta = await fetch(DATASET_URL);
-                const textoCSV = await respuesta.text();
-                
-                // Dividir el texto por saltos de línea para obtener las filas
-                const filas = textoCSV.split('\n');
+                // Ir a buscar el archivo JSON a internet (con timestamp para evitar cache)
+                const cacheBusterUrl = DATASET_URL + '?_t=' + new Date().getTime();
+                const respuesta = await fetch(cacheBusterUrl, { cache: 'no-store' });
+                const datosJSON = await respuesta.json();
                 
                 // Ocultar mensaje de carga
                 loading.style.display = 'none';
 
                 // Diccionario de traducción de equipos al español
                 const traduccionesEquipos = {
-                    "Mexico": "México", "South Korea": "Corea del Sur", "South Africa": "Sudáfrica", "Czechia": "Chequia",
-                    "Canada": "Canadá", "Switzerland": "Suiza", "Qatar": "Qatar", "Bosnia and Herzegovina": "Bosnia y Herze.",
+                    "Mexico": "México", "South Korea": "Corea del Sur", "South Africa": "Sudáfrica", "Czechia": "Chequia", "Czech Republic": "Chequia",
+                    "Canada": "Canadá", "Switzerland": "Suiza", "Qatar": "Qatar", "Bosnia and Herzegovina": "Bosnia y Herze.", "Bosnia & Herzegovina": "Bosnia y Herze.",
                     "Brazil": "Brasil", "Scotland": "Escocia", "Morocco": "Marruecos", "Haiti": "Haití",
-                    "USA": "Estados Unidos", "United States": "Estados Unidos", "Turkey": "Turquía", "Paraguay": "Paraguay", "Australia": "Australia",
+                    "USA": "Estados Unidos", "United States": "Estados Unidos", "Turkey": "Turquía", "Türkiye": "Turquía", "Paraguay": "Paraguay", "Australia": "Australia",
                     "Germany": "Alemania", "Ecuador": "Ecuador", "Ivory Coast": "Costa de Marfil", "Côte d'Ivoire": "Costa de Marfil", "Curacao": "Curaçao",
                     "Netherlands": "Países Bajos", "Tunisia": "Túnez", "Japan": "Japón", "Sweden": "Suecia",
-                    "Belgium": "Bélgica", "New Zealand": "Nueva Zelanda", "Egypt": "Egipto", "Iran": "Irán",
+                    "Belgium": "Bélgica", "New Zealand": "Nueva Zelanda", "Egypt": "Egipto", "Iran": "Irán", "IR Iran": "Irán",
                     "Spain": "España", "Uruguay": "Uruguay", "Cape Verde": "Cabo Verde", "Saudi Arabia": "Arabia Saud.",
                     "France": "Francia", "Norway": "Noruega", "Senegal": "Senegal", "Iraq": "Irak",
                     "Argentina": "Argentina", "Jordan": "Jordania", "Algeria": "Argelia", "Austria": "Austria",
-                    "Portugal": "Portugal", "Colombia": "Colombia", "DR Congo": "RD Congo", "Uzbekistan": "Uzbekistán",
+                    "Portugal": "Portugal", "Colombia": "Colombia", "DR Congo": "RD Congo", "Congo DR": "RD Congo", "Uzbekistan": "Uzbekistán",
                     "England": "Inglaterra", "Panama": "Panamá", "Croatia": "Croacia", "Ghana": "Ghana"
                 };
                 const traducir = (nombre) => traduccionesEquipos[nombre] || nombre;
 
-                // Saltamos la primera fila (los encabezados) y procesamos el resto
-                for (let i = 1; i < filas.length; i++) {
-                    if (!filas[i]) continue; // Evitar líneas vacías
-                    
-                    // Separar las columnas por coma (suponiendo un CSV simple)
-                    const columnas = filas[i].split(',');
+                // Procesar los partidos
+                if (datosJSON && datosJSON.matches) {
+                    for (const partido of datosJSON.matches) {
+                        // Solo mostrar los partidos que tienen resultado final (ft)
+                        if (partido.score && partido.score.ft && partido.score.ft.length === 2) {
+                            const fecha = partido.date + (partido.time ? " " + partido.time : "");
+                            const local = traducir(partido.team1);
+                            const visitante = traducir(partido.team2);
+                            const golesL = partido.score.ft[0];
+                            const golesV = partido.score.ft[1];
 
-                    // Índices correctos basados en la cabecera real del CSV:
-                    const fecha = columnas[1] + " " + columnas[2]; // date + kickoff_time_utc
-                    const local = traducir(columnas[7]);           // home_team_name
-                    const golesL = columnas[11];                   // home_score
-                    const golesV = columnas[12];                   // away_score
-                    const visitante = traducir(columnas[9]);       // away_team_name
-
-                    const filaHTML = `
-                        <tr>
-                            <td>${fecha}</td>
-                            <td>${local}</td>
-                            <td><strong>${golesL} - ${golesV}</strong></td>
-                            <td>${visitante}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += filaHTML;
+                            const filaHTML = `
+                                <tr>
+                                    <td>${fecha}</td>
+                                    <td>${local}</td>
+                                    <td><strong>${golesL} - ${golesV}</strong></td>
+                                    <td>${visitante}</td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += filaHTML;
+                        }
+                    }
                 }
             } catch (error) {
                 loading.style.display = 'none';
